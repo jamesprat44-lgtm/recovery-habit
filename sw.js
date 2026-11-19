@@ -8,10 +8,10 @@ const ASSETS = [
   "./app.css",
   "./app.js",
   "./manifest.webmanifest",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/apple-touch-icon.png",
-  "./icons/icon.svg",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./apple-touch-icon.png",
+  "./icon.svg",
 ];
 
 self.addEventListener("install", (event) => {
@@ -60,8 +60,8 @@ self.addEventListener("message", (event) => {
   if (data.type === "notify") {
     self.registration.showNotification(data.title || "Recovery Habit", {
       body: data.body || "",
-      icon: "./icons/icon-192.png",
-      badge: "./icons/icon-96.png",
+      icon: "./icon-192.png",
+      badge: "./icon-96.png",
       tag: data.tag || undefined,
       data: { url: data.url || "./index.html" },
     });
@@ -79,8 +79,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(payload.title, {
       body: payload.body,
-      icon: "./icons/icon-192.png",
-      badge: "./icons/icon-96.png",
+      icon: "./icon-192.png",
+      badge: "./icon-96.png",
       data: { url: payload.url || "./index.html" },
     }),
   );
