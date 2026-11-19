@@ -44,9 +44,10 @@
   /* ---------- Stav ---------- */
   const defaultState = () => ({
     version: 1,
-    profile: { name: "" },
-    settings: { notifications: true, theme: "auto", installDismissed: false, onboarded: false },
+    profile: { name: "", avatar: "🌱" },
+    settings: { notifications: true, theme: "auto", season: "auto", installDismissed: false, onboarded: false },
     habits: [],
+    oneOffs: [],
     logs: {}, // { "YYYY-MM-DD": { habitId: true } }
     createdAt: new Date().toISOString(),
   });
@@ -56,7 +57,7 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return defaultState();
       const parsed = JSON.parse(raw);
-      return Object.assign(defaultState(), parsed, { settings: Object.assign(defaultState().settings, parsed.settings || {}), profile: Object.assign({ name: "" }, parsed.profile || {}) });
+      return Object.assign(defaultState(), parsed, { settings: Object.assign(defaultState().settings, parsed.settings || {}), profile: Object.assign({ name: "", avatar: "🌱" }, parsed.profile || {}), oneOffs: Array.isArray(parsed.oneOffs) ? parsed.oneOffs : [] });
     } catch {
       return defaultState();
     }
@@ -237,6 +238,9 @@
         </div>
       </section>
 
+      <section class="card oneoff-card mt"><div class="card-title"><span>Jednorazové úlohy</span><button class="btn sm outline" data-action="add-oneoff">+ Pridať</button></div>
+        ${state.oneOffs.filter((x) => x.date === date).length ? `<ul class="oneoff-list mt">${state.oneOffs.filter((x) => x.date === date).map((x) => `<li class="oneoff-item ${x.done ? "done" : ""}"><button class="check" data-action="toggle-oneoff" data-id="${esc(x.id)}" ${future ? "disabled" : ""} aria-label="Označiť úlohu">${x.done ? "✓" : ""}</button><span class="oneoff-emoji">${esc(x.emoji || "🌿")}</span><span class="oneoff-name">${esc(x.title)}</span>${x.time ? `<small>${esc(x.time)}</small>` : ""}<button class="more" data-action="delete-oneoff" data-id="${esc(x.id)}" aria-label="Odstrániť">×</button></li>`).join("")}</ul>` : `<p class="small muted mt">Úlohy, ktoré platia iba pre tento deň.</p>`}
+      </section>
       ${state.habits.length === 0
         ? `<div class="empty mt"><div class="ico">🌱</div><strong>Zatiaľ žiadne predsavzatia</strong><p>Začni s jedným, ktoré zvládneš aj v najhorší deň.</p><a class="btn mt" href="#/add">+ Pridať prvé predsavzatie</a></div>`
         : hs.length === 0
@@ -267,7 +271,25 @@
       }
       if (a === "menu") habitMenu(state.habits.find((x) => x.id === el.dataset.id), date, () => renderHome(app, date));
       if (a === "share-day") shareDay(date);
+      if (a === "add-oneoff") addOneOff(date, () => renderHome(app, date));
+      if (a === "toggle-oneoff") { const task = state.oneOffs.find((x) => x.id === el.dataset.id); if (task && !future) { task.done = !task.done; save(); renderHome(app, date); } }
+      if (a === "delete-oneoff") { state.oneOffs = state.oneOffs.filter((x) => x.id !== el.dataset.id); save(); renderHome(app, date); }
     };
+  }
+
+  function addOneOff(date, after) {
+    sheet(`<h3>Jednorazová úloha</h3><p class="sub">Platí iba pre vybraný deň – nebude sa opakovať.</p>
+      <label class="field"><span>Čo chceš urobiť?</span><input class="input" id="oneoff-title" maxlength="100" placeholder="napr. Zavolať lekárovi" required /></label>
+      <div class="row"><label class="field"><span>Dátum</span><input class="input" id="oneoff-date" type="date" value="${esc(date)}" required /></label><label class="field"><span>Čas (voliteľný)</span><input class="input" id="oneoff-time" type="time" /></label></div>
+      <div class="btn-row"><button class="btn secondary" data-cancel>Zrušiť</button><button class="btn" data-save>Pridať úlohu</button></div>`, (el) => {
+      $("[data-cancel]", el).onclick = closeSheet;
+      $("[data-save]", el).onclick = () => {
+        const title = $("#oneoff-title", el).value.trim(), taskDate = $("#oneoff-date", el).value;
+        if (!title || !taskDate) return toast({ kind: "error", title: "Doplň názov a dátum úlohy" });
+        state.oneOffs.push({ id: uid(), title, date: taskDate, time: $("#oneoff-time", el).value, emoji: "🌿", done: false, createdAt: new Date().toISOString() });
+        save(); closeSheet(); toast({ kind: "success", title: "Úloha pridaná" }); after();
+      };
+    });
   }
 
   function habitItem(h, date, future) {
@@ -411,6 +433,7 @@
       }
       const sel = dayStats(selected);
       const hs = habitsFor(selected);
+      const oneOffs = state.oneOffs.filter((x) => x.date === selected);
       app.innerHTML = `
         <header class="page-head">
           <p class="eyebrow">História</p>
@@ -430,6 +453,10 @@
           <div class="card-title"><span>${relDay(selected)}</span>${sel.total ? `<span class="pill ${sel.pct === 100 ? "" : "muted"}">${sel.done}/${sel.total} · ${sel.pct}%</span>` : ""}</div>
           ${hs.length === 0 ? `<p class="muted small mt">Na tento deň nebolo nič naplánované.</p>` : `<ul class="habit-list mt">${hs.map((h) => habitItem(h, selected, selected > t)).join("")}</ul>`}
           ${selected > t ? `<p class="small muted mt">Budúci deň – označiť budeš môcť, keď príde.</p>` : ""}
+        </section>
+        <section class="card mt oneoff-card">
+          <div class="card-title"><span>Jednorazové úlohy</span><button class="btn sm outline" data-action="add-oneoff">+ Pridať</button></div>
+          ${oneOffs.length ? `<ul class="oneoff-list mt">${oneOffs.map((x) => `<li class="oneoff-item ${x.done ? "done" : ""}"><button class="check" data-action="toggle-oneoff" data-id="${esc(x.id)}" ${selected > t ? "disabled" : ""} aria-label="Označiť úlohu">${x.done ? "✓" : ""}</button><span class="oneoff-emoji">${esc(x.emoji || "🌿")}</span><span class="oneoff-name">${esc(x.title)}</span>${x.time ? `<small>${esc(x.time)}</small>` : ""}<button class="more" data-action="delete-oneoff" data-id="${esc(x.id)}" aria-label="Odstrániť">×</button></li>`).join("")}</ul>` : `<p class="small muted mt">Na tento deň nemáš jednorazovú úlohu.</p>`}
         </section>`;
       app.querySelectorAll("[data-nav]").forEach((b) => (b.onclick = () => { m += Number(b.dataset.nav); if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } selected = `${y}-${pad(m)}-01`; if (t.startsWith(`${y}-${pad(m)}`)) selected = t; draw(); }));
       app.querySelectorAll("[data-day]").forEach((b) => (b.onclick = () => { selected = b.dataset.day; draw(); }));
@@ -443,6 +470,15 @@
           draw();
         }
         if (el.dataset.action === "menu") habitMenu(state.habits.find((x) => x.id === el.dataset.id), selected, draw);
+        if (el.dataset.action === "add-oneoff") addOneOff(selected, draw);
+        if (el.dataset.action === "toggle-oneoff") {
+          const task = state.oneOffs.find((x) => x.id === el.dataset.id);
+          if (task && selected <= t) { task.done = !task.done; save(); draw(); }
+        }
+        if (el.dataset.action === "delete-oneoff") {
+          state.oneOffs = state.oneOffs.filter((x) => x.id !== el.dataset.id);
+          save(); draw();
+        }
       };
     };
     draw();
@@ -497,13 +533,15 @@
     app.innerHTML = `
       <header class="page-head"><p class="eyebrow">Ty</p><h1 class="title">Nastavenia</h1></header>
       <section class="card">
-        <label class="field"><span>Tvoje meno</span><input class="input" id="name" value="${esc(state.profile.name)}" placeholder="Ako ťa máme oslovovať?" maxlength="40" /></label>
-        <div class="field" style="margin-bottom:0"><span>Vzhľad</span><div class="segment" id="theme">${[["auto", "Automaticky"], ["light", "Svetlý"], ["dark", "Tmavý"]].map(([k, l]) => `<button type="button" data-t="${k}" class="${state.settings.theme === k ? "on" : ""}">${l}</button>`).join("")}</div></div>
+        <label class="field"><span>Osobný profil</span><div class="profile-edit"><span class="profile-avatar">${esc(state.profile.avatar || "🌱")}</span><input class="input" id="name" value="${esc(state.profile.name)}" placeholder="Ako ťa máme oslovovať?" maxlength="40" /></div></label>
+        <div class="field"><span>Tvoja ikona</span><div class="chips" id="profile-avatars">${["🌱","🌿","🍃","🌳","🌻","🌸","🪴","✨","🦋","☀️"].map((v) => `<button type="button" class="chip ${state.profile.avatar === v ? "on" : ""}" data-avatar="${v}">${v}</button>`).join("")}</div></div>
+        <div class="field"><span>Vzhľad</span><div class="segment" id="theme">${[["auto", "Automaticky"], ["light", "Svetlý"], ["dark", "Tmavý"]].map(([k, l]) => `<button type="button" data-t="${k}" class="${state.settings.theme === k ? "on" : ""}">${l}</button>`).join("")}</div></div>
+        <div class="field mt" style="margin-bottom:0"><span>Sezónny motív</span><div class="segment" id="season">${[["auto","Automaticky"],["spring","Jar"],["summer","Leto"],["autumn","Jeseň"],["winter","Zima"]].map(([k,l]) => `<button type="button" data-season="${k}" class="${(state.settings.season || "auto") === k ? "on" : ""}">${l}</button>`).join("")}</div><p class="small muted mt">Automatický motív sa mení podľa ročného obdobia.</p></div>
       </section>
       <section class="card">
         <div class="card-title">Pripomienky</div>
         <div class="list mt">
-          <div class="list-row"><span class="ico">🔔</span><span class="txt"><b>Upozornenia na predsavzatia</b><span>V čase pripomienky, keď je aplikácia otvorená</span></span><button class="switch ${state.settings.notifications ? "on" : ""}" id="notif" aria-label="Upozornenia"></button></div>
+          <div class="list-row"><span class="ico">🔔</span><span class="txt"><b>Upozornenia na predsavzatia a úlohy</b><span>V čase pripomienky, keď je aplikácia otvorená</span></span><button class="switch ${state.settings.notifications ? "on" : ""}" id="notif" aria-label="Upozornenia"></button></div>
           <div class="list-row"><span class="ico">📲</span><span class="txt"><b>Systémové notifikácie</b><span>${perm === "granted" ? "Povolené ✓" : perm === "denied" ? "Zablokované – povoľ v nastaveniach prehliadača" : perm === "unsupported" ? (standalone ? "Nepodporované" : "Na iPhone: najprv pridaj na plochu, potom povoľ") : "Zatiaľ nepovolené"}</span></span>${perm === "default" ? `<button class="btn sm" id="perm">Povoliť</button>` : ""}</div>
           <div class="list-row"><span class="ico">🚧</span><span class="txt"><b>Upozornenia na pozadí (Web Push)</b><span>Vyžaduje serverovú časť – pripravené v service workeri, zatiaľ neaktívne</span></span></div>
         </div>
@@ -523,6 +561,8 @@
       </section>`;
 
     $("#name").onchange = (e) => { state.profile.name = e.target.value.trim(); save(); toast({ kind: "success", title: "Meno uložené" }); };
+    $("#profile-avatars").onclick = (e) => { const b = e.target.closest("[data-avatar]"); if (!b) return; state.profile.avatar = b.dataset.avatar; save(); renderSettings(app); };
+    $("#season").onclick = (e) => { const b = e.target.closest("[data-season]"); if (!b) return; state.settings.season = b.dataset.season; save(); applyTheme(); renderSettings(app); };
     $("#theme").onclick = (e) => { const b = e.target.closest("[data-t]"); if (!b) return; state.settings.theme = b.dataset.t; save(); applyTheme(); renderSettings(app); };
     $("#notif").onclick = () => { state.settings.notifications = !state.settings.notifications; save(); renderSettings(app); toast({ title: state.settings.notifications ? "Pripomienky zapnuté" : "Pripomienky pozastavené" }); };
     const permBtn = $("#perm"); if (permBtn) permBtn.onclick = () => askNotificationPermission().then(() => renderSettings(app));
@@ -671,8 +711,8 @@
     if (!("Notification" in window) || Notification.permission !== "granted") return;
     try {
       const reg = navigator.serviceWorker && (await navigator.serviceWorker.getRegistration());
-      if (reg && reg.showNotification) return reg.showNotification(title, { body, icon: "icons/icon-192.png", badge: "icons/icon-96.png", tag });
-      new Notification(title, { body, icon: "icons/icon-192.png", tag });
+      if (reg && reg.showNotification) return reg.showNotification(title, { body, icon: "icon-192.png", badge: "icon-96.png", tag });
+      new Notification(title, { body, icon: "icon-192.png", tag });
     } catch { /* ignore */ }
   }
   function tick() {
@@ -688,6 +728,16 @@
       notify(`${h.emoji} ${h.name}`, body, key);
       if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
     }
+    for (const task of state.oneOffs) {
+      if (task.date !== t || !task.time || task.time !== hm || task.done) continue;
+      const key = `oneoff:${task.id}:${t}:${hm}`;
+      if (fired.has(key)) continue;
+      fired.add(key);
+      const body = `Nezabudni: ${task.title}. Čas na tvoj dnešný krok.`;
+      toast({ kind: "reminder", title: `🌿 ${task.title}`, body });
+      notify(`🌿 ${task.title}`, body, key);
+      if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+    }
   }
   setInterval(tick, 20000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { tick(); render(); } });
@@ -697,6 +747,12 @@
     const pref = state.settings.theme;
     const dark = pref === "dark" || (pref === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.dataset.theme = dark ? "dark" : "light";
+    const seasonPref = state.settings.season || "auto";
+    const month = new Date().getMonth() + 1, day = new Date().getDate();
+    const seasonal = month < 3 || (month === 3 && day < 20) || month === 12 && day >= 21 ? "winter"
+      : month < 6 || (month === 6 && day < 21) ? "spring"
+      : month < 9 || (month === 9 && day < 23) ? "summer" : "autumn";
+    document.documentElement.dataset.season = seasonPref === "auto" ? seasonal : seasonPref;
   }
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
 
