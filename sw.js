@@ -1,7 +1,7 @@
 /* Recovery Habit – service worker
  * Offline cache (cache-first pre app shell) + zobrazovanie notifikácií.
  */
-const CACHE = "recovery-habit-v3";
+const CACHE = "recovery-habit-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -40,18 +40,28 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  const isAppShell = req.mode === "navigate" || /\\.(?:html|css|js|webmanifest)$/.test(url.pathname);
   event.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((cached) => {
-      const network = fetch(req)
-        .then((res) => {
-          if (res && res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE).then((cache) => cache.put(req, copy));
+    caches.open(CACHE).then(async (cache) => {
+      const cached = await cache.match(req, { ignoreSearch: true });
+      if (isAppShell) {
+        try {
+          const fresh = await fetch(req, { cache: "no-store" });
+          if (fresh && fresh.ok) {
+            await cache.put(req, fresh.clone());
+            return fresh;
           }
-          return res;
-        })
-        .catch(() => cached || caches.match("./index.html"));
-      return cached || network;
+        } catch {}
+        return cached || cache.match("./index.html");
+      }
+      if (cached) return cached;
+      try {
+        const fresh = await fetch(req);
+        if (fresh && fresh.ok) await cache.put(req, fresh.clone());
+        return fresh;
+      } catch {
+        return cache.match("./index.html");
+      }
     }),
   );
 });
