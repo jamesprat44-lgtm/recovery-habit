@@ -214,6 +214,14 @@
 
     app.innerHTML = `
       <header class="page-head">
+        <div class="brand-row">
+          <div class="brand-lockup"><img src="icon.svg" alt="" class="brand-mark"><span>RECOVERY <b>HABIT</b></span></div>
+          <button class="profile-pill" data-action="profile" aria-label="Otvoriť osobný profil"><span class="profile-pill-avatar">${esc(state.profile.avatar || "🌱")}</span><span><b>${esc(state.profile.name || "Môj profil")}</b><small>Osobný priestor</small></span><span class="profile-chevron">›</span></button>
+        </div>
+        <div class="season-banner season-${document.documentElement.dataset.season}">
+          <span class="season-symbol">${({spring:"🌷",summer:"☀️",autumn:"🍂",winter:"❄️"})[document.documentElement.dataset.season] || "🌿"}</span>
+          <span><small>SEZÓNNY MOTÍV</small><b>${({spring:"Jar – nový začiatok",summer:"Leto – energia a rast",autumn:"Jeseň – pokoj a sústredenie",winter:"Zima – čas pre seba"})[document.documentElement.dataset.season] || "Rast každý deň"}</b></span>
+        </div>
         <div class="head-row">
           <div>
             <p class="eyebrow">${isToday ? greeting() + name : "Spätný pohľad"}</p>
@@ -255,6 +263,7 @@
       const el = e.target.closest("[data-action]");
       if (!el) return;
       const a = el.dataset.action;
+      if (a === "profile") go("#/settings");
       if (a === "day") go(`#/home/${addDays(date, Number(el.dataset.d))}`);
       if (a === "goto-today") go("#/home");
       if (a === "toggle") {
@@ -560,7 +569,8 @@
         ${!standalone ? `<button class="btn outline block mt" id="how-install">Ako pridať na plochu iPhonu</button>` : ""}
       </section>`;
 
-    $("#name").onchange = (e) => { state.profile.name = e.target.value.trim(); save(); toast({ kind: "success", title: "Meno uložené" }); };
+    $("#name").oninput = (e) => { state.profile.name = e.target.value; save(); };
+    $("#name").onchange = () => { state.profile.name = state.profile.name.trim(); save(); toast({ kind: "success", title: "Meno uložené" }); };
     $("#profile-avatars").onclick = (e) => { const b = e.target.closest("[data-avatar]"); if (!b) return; state.profile.avatar = b.dataset.avatar; save(); renderSettings(app); };
     $("#season").onclick = (e) => { const b = e.target.closest("[data-season]"); if (!b) return; state.settings.season = b.dataset.season; save(); applyTheme(); renderSettings(app); };
     $("#theme").onclick = (e) => { const b = e.target.closest("[data-t]"); if (!b) return; state.settings.theme = b.dataset.t; save(); applyTheme(); renderSettings(app); };
@@ -752,7 +762,10 @@
     const seasonal = month < 3 || (month === 3 && day < 20) || month === 12 && day >= 21 ? "winter"
       : month < 6 || (month === 6 && day < 21) ? "spring"
       : month < 9 || (month === 9 && day < 23) ? "summer" : "autumn";
-    document.documentElement.dataset.season = seasonPref === "auto" ? seasonal : seasonPref;
+    const activeSeason = seasonPref === "auto" ? seasonal : seasonPref;
+    document.documentElement.dataset.season = activeSeason;
+    const seasonMeta = document.querySelector('meta[name="theme-color"]');
+    if (seasonMeta) seasonMeta.content = ({spring:"#dfe9d9",summer:"#dcece3",autumn:"#ead9c8",winter:"#dce6ec"})[activeSeason] || "#f6f4ef";
   }
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
 
