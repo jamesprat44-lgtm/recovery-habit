@@ -541,7 +541,7 @@
       <section class="card">
         <div class="card-title">Pripomienky</div>
         <div class="list mt">
-          <div class="list-row"><span class="ico">🔔</span><span class="txt"><b>Upozornenia na predsavzatia</b><span>V čase pripomienky, keď je aplikácia otvorená</span></span><button class="switch ${state.settings.notifications ? "on" : ""}" id="notif" aria-label="Upozornenia"></button></div>
+          <div class="list-row"><span class="ico">🔔</span><span class="txt"><b>Upozornenia na predsavzatia a úlohy</b><span>V čase pripomienky, keď je aplikácia otvorená</span></span><button class="switch ${state.settings.notifications ? "on" : ""}" id="notif" aria-label="Upozornenia"></button></div>
           <div class="list-row"><span class="ico">📲</span><span class="txt"><b>Systémové notifikácie</b><span>${perm === "granted" ? "Povolené ✓" : perm === "denied" ? "Zablokované – povoľ v nastaveniach prehliadača" : perm === "unsupported" ? (standalone ? "Nepodporované" : "Na iPhone: najprv pridaj na plochu, potom povoľ") : "Zatiaľ nepovolené"}</span></span>${perm === "default" ? `<button class="btn sm" id="perm">Povoliť</button>` : ""}</div>
           <div class="list-row"><span class="ico">🚧</span><span class="txt"><b>Upozornenia na pozadí (Web Push)</b><span>Vyžaduje serverovú časť – pripravené v service workeri, zatiaľ neaktívne</span></span></div>
         </div>
@@ -711,8 +711,8 @@
     if (!("Notification" in window) || Notification.permission !== "granted") return;
     try {
       const reg = navigator.serviceWorker && (await navigator.serviceWorker.getRegistration());
-      if (reg && reg.showNotification) return reg.showNotification(title, { body, icon: "icons/icon-192.png", badge: "icons/icon-96.png", tag });
-      new Notification(title, { body, icon: "icons/icon-192.png", tag });
+      if (reg && reg.showNotification) return reg.showNotification(title, { body, icon: "icon-192.png", badge: "icon-96.png", tag });
+      new Notification(title, { body, icon: "icon-192.png", tag });
     } catch { /* ignore */ }
   }
   function tick() {
