@@ -283,3 +283,42 @@ html[data-theme="dark"] .tab-add .add-circle { color: #052321; }
 .oneoff-emoji { font-size:19px; }
 .oneoff-name { flex:1; min-width:0; font-size:14px; font-weight:600; }
 .oneoff-item small { color:var(--muted); font-size:11px; }
+
+
+/* Recovery Habit – výraznejšie sezónne prostredia a viditeľný profil */
+html, body { min-height:100%; }
+body { background:var(--bg); transition:background .35s ease,color .25s ease; }
+html[data-season="spring"] body { background:radial-gradient(ellipse at 8% 4%,rgba(174,205,157,.42),transparent 43%),radial-gradient(ellipse at 96% 28%,rgba(226,213,177,.32),transparent 38%),linear-gradient(155deg,#f4f7ed 0%,#e9f0e3 52%,#f8f5ed 100%); }
+html[data-season="summer"] body { background:radial-gradient(ellipse at 92% 4%,rgba(116,190,166,.38),transparent 43%),radial-gradient(ellipse at 4% 35%,rgba(241,218,145,.28),transparent 40%),linear-gradient(155deg,#eef7ed 0%,#e2f0e7 55%,#f6f6e9 100%); }
+html[data-season="autumn"] body { background:radial-gradient(ellipse at 92% 7%,rgba(210,143,91,.34),transparent 43%),radial-gradient(ellipse at 2% 36%,rgba(191,126,83,.22),transparent 40%),linear-gradient(155deg,#f8f0e5 0%,#f0e3d5 54%,#f8f2e9 100%); }
+html[data-season="winter"] body { background:radial-gradient(ellipse at 92% 5%,rgba(143,180,204,.38),transparent 43%),radial-gradient(ellipse at 4% 38%,rgba(195,215,225,.35),transparent 42%),linear-gradient(155deg,#f0f5f7 0%,#e4edf2 54%,#f5f6f6 100%); }
+html[data-theme="dark"][data-season="spring"] body { background:radial-gradient(ellipse at 90% 5%,rgba(91,128,83,.25),transparent 45%),linear-gradient(155deg,#101a14,#14221a 58%,#101914); }
+html[data-theme="dark"][data-season="summer"] body { background:radial-gradient(ellipse at 90% 5%,rgba(44,132,112,.28),transparent 45%),linear-gradient(155deg,#0d1917,#122521 58%,#101b19); }
+html[data-theme="dark"][data-season="autumn"] body { background:radial-gradient(ellipse at 90% 5%,rgba(165,94,54,.28),transparent 45%),linear-gradient(155deg,#1b1511,#241b15 58%,#171512); }
+html[data-theme="dark"][data-season="winter"] body { background:radial-gradient(ellipse at 90% 5%,rgba(84,117,140,.3),transparent 45%),linear-gradient(155deg,#10171d,#17232c 58%,#111920); }
+.app { background:transparent; }
+.card { background:color-mix(in srgb,var(--card) 91%,transparent); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.brand-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:18px; }
+.brand-lockup { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:10px; letter-spacing:.14em; font-weight:600; white-space:nowrap; }
+.brand-lockup b { color:var(--text); font-weight:800; }
+.brand-mark { width:34px; height:34px; border-radius:11px; box-shadow:0 3px 10px rgba(20,45,32,.18); }
+.profile-pill { display:flex; align-items:center; gap:8px; max-width:66%; min-width:0; border:1px solid var(--border); background:color-mix(in srgb,var(--card) 84%,transparent); border-radius:16px; padding:6px 9px 6px 6px; text-align:left; box-shadow:var(--shadow); }
+.profile-pill-avatar { width:34px; height:34px; flex:0 0 34px; border-radius:11px; display:grid; place-items:center; background:var(--brand-soft); font-size:20px; }
+.profile-pill span:nth-child(2) { display:flex; flex-direction:column; min-width:0; }
+.profile-pill b { font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:125px; }
+.profile-pill small { color:var(--muted); font-size:10px; }
+.profile-chevron { color:var(--faint); font-size:20px; margin-left:2px; }
+.season-banner { display:flex; align-items:center; gap:12px; padding:13px 16px; margin-bottom:18px; border:1px solid color-mix(in srgb,var(--brand) 18%,transparent); border-radius:19px; overflow:hidden; position:relative; }
+.season-banner:after { content:""; position:absolute; width:112px; height:112px; border:1px solid currentColor; border-radius:50%; right:-22px; top:-54px; opacity:.12; box-shadow:0 0 0 12px currentColor,0 0 0 25px currentColor; }
+.season-banner small { display:block; font-size:9px; letter-spacing:.14em; font-weight:800; opacity:.72; margin-bottom:3px; }
+.season-banner b { display:block; font-size:13px; font-weight:700; }
+.season-symbol { font-size:26px; width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:rgba(255,255,255,.42); }
+.season-spring { color:#526f50; background:linear-gradient(110deg,rgba(220,236,207,.94),rgba(242,241,222,.84)); }
+.season-summer { color:#28685e; background:linear-gradient(110deg,rgba(200,232,215,.96),rgba(244,235,194,.86)); }
+.season-autumn { color:#89512f; background:linear-gradient(110deg,rgba(242,215,190,.96),rgba(249,232,207,.88)); }
+.season-winter { color:#46677c; background:linear-gradient(110deg,rgba(211,228,238,.96),rgba(235,240,242,.9)); }
+html[data-theme="dark"] .season-spring { color:#c2d8b6; background:linear-gradient(110deg,rgba(49,77,48,.92),rgba(36,55,40,.9)); }
+html[data-theme="dark"] .season-summer { color:#a7dacc; background:linear-gradient(110deg,rgba(30,78,67,.94),rgba(37,65,53,.9)); }
+html[data-theme="dark"] .season-autumn { color:#edbd91; background:linear-gradient(110deg,rgba(91,53,34,.94),rgba(67,48,34,.9)); }
+html[data-theme="dark"] .season-winter { color:#bad3e1; background:linear-gradient(110deg,rgba(39,65,82,.94),rgba(35,51,64,.9)); }
+@media(max-width:360px) { .brand-lockup { font-size:9px; gap:5px; } .brand-mark { width:30px;height:30px; } .profile-pill { gap:6px; padding-right:6px; } .profile-pill b { max-width:85px; } }
