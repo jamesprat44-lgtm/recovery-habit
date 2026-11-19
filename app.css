@@ -322,3 +322,54 @@ html[data-theme="dark"] .season-summer { color:#a7dacc; background:linear-gradie
 html[data-theme="dark"] .season-autumn { color:#edbd91; background:linear-gradient(110deg,rgba(91,53,34,.94),rgba(67,48,34,.9)); }
 html[data-theme="dark"] .season-winter { color:#bad3e1; background:linear-gradient(110deg,rgba(39,65,82,.94),rgba(35,51,64,.9)); }
 @media(max-width:360px) { .brand-lockup { font-size:9px; gap:5px; } .brand-mark { width:30px;height:30px; } .profile-pill { gap:6px; padding-right:6px; } .profile-pill b { max-width:85px; } }
+
+
+/* Recovery Habit – RH identity, circular profile and seasonal atmosphere */
+.app { position:relative; z-index:1; }
+.brand-monogram {
+  width:38px; height:38px; flex:0 0 38px; display:grid; place-items:center;
+  border-radius:13px; color:#f3ead7; font-family:Georgia,"Times New Roman",serif;
+  font-size:18px; font-weight:700; letter-spacing:-2px; padding-right:2px;
+  background:linear-gradient(145deg,#42644f,#203b2d);
+  border:1px solid rgba(229,238,218,.48);
+  box-shadow:0 4px 12px rgba(32,59,45,.2),inset 0 1px 0 rgba(255,255,255,.18);
+}
+.profile-trigger {
+  width:48px; height:48px; flex:0 0 48px; display:grid; place-items:center;
+  padding:3px; border-radius:50%; border:2px solid var(--brand);
+  background:color-mix(in srgb,var(--card) 82%,transparent);
+  box-shadow:0 3px 12px rgba(30,55,42,.13);
+}
+.profile-trigger-avatar {
+  width:100%; height:100%; display:grid; place-items:center; border-radius:50%;
+  background:var(--brand-soft); font-size:25px; line-height:1;
+}
+.profile-trigger:active { transform:scale(.94); }
+.profile-tab-avatar {
+  width:27px; height:27px; display:grid; place-items:center; border-radius:50%;
+  background:var(--brand-soft); font-size:17px; line-height:1;
+  outline:2px solid color-mix(in srgb,var(--brand) 55%,transparent);
+  outline-offset:2px; margin:1px 0 2px;
+}
+.tab[data-tab="settings"] svg { display:none; }
+.tab[data-tab="settings"] { gap:4px; }
+body::before, body::after {
+  position:fixed; z-index:0; pointer-events:none; user-select:none;
+  font-size:58px; line-height:1; opacity:.13; filter:saturate(.8);
+  transition:opacity .35s ease,transform .5s ease;
+}
+body::before { content:"🌿"; top:13%; right:5%; transform:rotate(22deg); text-shadow:-150px 190px 0 rgba(110,145,110,.45),-270px 410px 0 rgba(110,145,110,.3); }
+body::after { content:"🍃"; bottom:17%; left:4%; transform:rotate(-24deg); text-shadow:150px -190px 0 rgba(110,145,110,.35),270px -360px 0 rgba(110,145,110,.25); }
+html[data-season="spring"] body::before { content:"🌸"; }
+html[data-season="spring"] body::after { content:"🌷"; }
+html[data-season="summer"] body::before { content:"☀️"; }
+html[data-season="summer"] body::after { content:"🌼"; }
+html[data-season="autumn"] body::before { content:"🍂"; }
+html[data-season="autumn"] body::after { content:"🍁"; }
+html[data-season="winter"] body::before { content:"❄️"; }
+html[data-season="winter"] body::after { content:"❄"; font-size:48px; }
+html[data-theme="dark"] body::before, html[data-theme="dark"] body::after { opacity:.1; }
+@media (max-width:360px) {
+  .brand-monogram { width:34px;height:34px;flex-basis:34px;font-size:16px; }
+  .profile-trigger { width:44px;height:44px;flex-basis:44px; }
+}

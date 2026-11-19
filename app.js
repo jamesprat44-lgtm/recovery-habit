@@ -184,6 +184,10 @@
   function render() {
     const { path, arg } = route();
     const app = $("#app");
+    const profileTabAvatar = $("#profile-tab-avatar");
+    if (profileTabAvatar) profileTabAvatar.textContent = state.profile.avatar || "🌱";
+    const profileTab = $('[data-tab="settings"]');
+    if (profileTab) profileTab.setAttribute("aria-label", "Profil");
     app.scrollTop = 0;
     window.scrollTo(0, 0);
     switch (path) {
@@ -215,8 +219,8 @@
     app.innerHTML = `
       <header class="page-head">
         <div class="brand-row">
-          <div class="brand-lockup"><img src="icon.svg" alt="" class="brand-mark"><span>RECOVERY <b>HABIT</b></span></div>
-          <button class="profile-pill" data-action="profile" aria-label="Otvoriť osobný profil"><span class="profile-pill-avatar">${esc(state.profile.avatar || "🌱")}</span><span><b>${esc(state.profile.name || "Môj profil")}</b><small>Osobný priestor</small></span><span class="profile-chevron">›</span></button>
+          <div class="brand-lockup"><span class="brand-monogram" aria-label="Recovery Habit">RH</span><span>RECOVERY <b>HABIT</b></span></div>
+          <button class="profile-trigger" data-action="profile" aria-label="Otvoriť osobný profil ${esc(state.profile.name || "")}"><span class="profile-trigger-avatar">${esc(state.profile.avatar || "🌱")}</span></button>
         </div>
         <div class="season-banner season-${document.documentElement.dataset.season}">
           <span class="season-symbol">${({spring:"🌷",summer:"☀️",autumn:"🍂",winter:"❄️"})[document.documentElement.dataset.season] || "🌿"}</span>
@@ -540,9 +544,10 @@
     const perm = "Notification" in window ? Notification.permission : "unsupported";
     const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
     app.innerHTML = `
-      <header class="page-head"><p class="eyebrow">Ty</p><h1 class="title">Nastavenia</h1></header>
+      <header class="page-head"><p class="eyebrow">Osobný priestor</p><h1 class="title">Tvoj profil</h1><p class="subtitle">Uprav si svoj profil a vzhľad Recovery Habit.</p></header>
       <section class="card">
-        <label class="field"><span>Osobný profil</span><div class="profile-edit"><span class="profile-avatar">${esc(state.profile.avatar || "🌱")}</span><input class="input" id="name" value="${esc(state.profile.name)}" placeholder="Ako ťa máme oslovovať?" maxlength="40" /></div></label>
+        <div class="card-title">Osobné údaje</div>
+        <label class="field mt"><span>Osobný profil</span><div class="profile-edit"><span class="profile-avatar">${esc(state.profile.avatar || "🌱")}</span><input class="input" id="name" value="${esc(state.profile.name)}" placeholder="Ako ťa máme oslovovať?" maxlength="40" /></div></label>
         <div class="field"><span>Tvoja ikona</span><div class="chips" id="profile-avatars">${["🌱","🌿","🍃","🌳","🌻","🌸","🪴","✨","🦋","☀️"].map((v) => `<button type="button" class="chip ${state.profile.avatar === v ? "on" : ""}" data-avatar="${v}">${v}</button>`).join("")}</div></div>
         <div class="field"><span>Vzhľad</span><div class="segment" id="theme">${[["auto", "Automaticky"], ["light", "Svetlý"], ["dark", "Tmavý"]].map(([k, l]) => `<button type="button" data-t="${k}" class="${state.settings.theme === k ? "on" : ""}">${l}</button>`).join("")}</div></div>
         <div class="field mt" style="margin-bottom:0"><span>Sezónny motív</span><div class="segment" id="season">${[["auto","Automaticky"],["spring","Jar"],["summer","Leto"],["autumn","Jeseň"],["winter","Zima"]].map(([k,l]) => `<button type="button" data-season="${k}" class="${(state.settings.season || "auto") === k ? "on" : ""}">${l}</button>`).join("")}</div><p class="small muted mt">Automatický motív sa mení podľa ročného obdobia.</p></div>
@@ -571,7 +576,7 @@
 
     $("#name").oninput = (e) => { state.profile.name = e.target.value; save(); };
     $("#name").onchange = () => { state.profile.name = state.profile.name.trim(); save(); toast({ kind: "success", title: "Meno uložené" }); };
-    $("#profile-avatars").onclick = (e) => { const b = e.target.closest("[data-avatar]"); if (!b) return; state.profile.avatar = b.dataset.avatar; save(); renderSettings(app); };
+    $("#profile-avatars").onclick = (e) => { const b = e.target.closest("[data-avatar]"); if (!b) return; state.profile.avatar = b.dataset.avatar; save(); const tabAvatar = $("#profile-tab-avatar"); if (tabAvatar) tabAvatar.textContent = state.profile.avatar; renderSettings(app); };
     $("#season").onclick = (e) => { const b = e.target.closest("[data-season]"); if (!b) return; state.settings.season = b.dataset.season; save(); applyTheme(); renderSettings(app); };
     $("#theme").onclick = (e) => { const b = e.target.closest("[data-t]"); if (!b) return; state.settings.theme = b.dataset.t; save(); applyTheme(); renderSettings(app); };
     $("#notif").onclick = () => { state.settings.notifications = !state.settings.notifications; save(); renderSettings(app); toast({ title: state.settings.notifications ? "Pripomienky zapnuté" : "Pripomienky pozastavené" }); };
@@ -790,7 +795,7 @@
 
   /* ---------- Service worker ---------- */
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=4", { updateViaCache: "none" }).then((registration) => registration.update()).catch(() => {}));
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=5", { updateViaCache: "none" }).then((registration) => registration.update()).catch(() => {}));
   }
 
   /* ---------- Štart ---------- */
