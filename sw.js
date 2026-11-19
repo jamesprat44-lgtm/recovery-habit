@@ -40,7 +40,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  const isAppShell = req.mode === "navigate" || /\\.(?:html|css|js|webmanifest)$/.test(url.pathname);
+  const isAppShell = req.mode === "navigate" || /\.(?:html|css|js|webmanifest)$/.test(url.pathname);
   event.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const cached = await cache.match(req, { ignoreSearch: true });
