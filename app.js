@@ -576,7 +576,7 @@
 
     $("#name").oninput = (e) => { state.profile.name = e.target.value; save(); };
     $("#name").onchange = () => { state.profile.name = state.profile.name.trim(); save(); toast({ kind: "success", title: "Meno uložené" }); };
-    $("#profile-avatars").onclick = (e) => { const b = e.target.closest("[data-avatar]"); if (!b) return; state.profile.avatar = b.dataset.avatar; save(); renderSettings(app); };
+    $("#profile-avatars").onclick = (e) => { const b = e.target.closest("[data-avatar]"); if (!b) return; state.profile.avatar = b.dataset.avatar; save(); const tabAvatar = $("#profile-tab-avatar"); if (tabAvatar) tabAvatar.textContent = state.profile.avatar; renderSettings(app); };
     $("#season").onclick = (e) => { const b = e.target.closest("[data-season]"); if (!b) return; state.settings.season = b.dataset.season; save(); applyTheme(); renderSettings(app); };
     $("#theme").onclick = (e) => { const b = e.target.closest("[data-t]"); if (!b) return; state.settings.theme = b.dataset.t; save(); applyTheme(); renderSettings(app); };
     $("#notif").onclick = () => { state.settings.notifications = !state.settings.notifications; save(); renderSettings(app); toast({ title: state.settings.notifications ? "Pripomienky zapnuté" : "Pripomienky pozastavené" }); };
