@@ -433,6 +433,7 @@
       }
       const sel = dayStats(selected);
       const hs = habitsFor(selected);
+      const oneOffs = state.oneOffs.filter((x) => x.date === selected);
       app.innerHTML = `
         <header class="page-head">
           <p class="eyebrow">História</p>
@@ -452,6 +453,10 @@
           <div class="card-title"><span>${relDay(selected)}</span>${sel.total ? `<span class="pill ${sel.pct === 100 ? "" : "muted"}">${sel.done}/${sel.total} · ${sel.pct}%</span>` : ""}</div>
           ${hs.length === 0 ? `<p class="muted small mt">Na tento deň nebolo nič naplánované.</p>` : `<ul class="habit-list mt">${hs.map((h) => habitItem(h, selected, selected > t)).join("")}</ul>`}
           ${selected > t ? `<p class="small muted mt">Budúci deň – označiť budeš môcť, keď príde.</p>` : ""}
+        </section>
+        <section class="card mt oneoff-card">
+          <div class="card-title"><span>Jednorazové úlohy</span><button class="btn sm outline" data-action="add-oneoff">+ Pridať</button></div>
+          ${oneOffs.length ? `<ul class="oneoff-list mt">${oneOffs.map((x) => `<li class="oneoff-item ${x.done ? "done" : ""}"><button class="check" data-action="toggle-oneoff" data-id="${esc(x.id)}" ${selected > t ? "disabled" : ""} aria-label="Označiť úlohu">${x.done ? "✓" : ""}</button><span class="oneoff-emoji">${esc(x.emoji || "🌿")}</span><span class="oneoff-name">${esc(x.title)}</span>${x.time ? `<small>${esc(x.time)}</small>` : ""}<button class="more" data-action="delete-oneoff" data-id="${esc(x.id)}" aria-label="Odstrániť">×</button></li>`).join("")}</ul>` : `<p class="small muted mt">Na tento deň nemáš jednorazovú úlohu.</p>`}
         </section>`;
       app.querySelectorAll("[data-nav]").forEach((b) => (b.onclick = () => { m += Number(b.dataset.nav); if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } selected = `${y}-${pad(m)}-01`; if (t.startsWith(`${y}-${pad(m)}`)) selected = t; draw(); }));
       app.querySelectorAll("[data-day]").forEach((b) => (b.onclick = () => { selected = b.dataset.day; draw(); }));
@@ -465,6 +470,15 @@
           draw();
         }
         if (el.dataset.action === "menu") habitMenu(state.habits.find((x) => x.id === el.dataset.id), selected, draw);
+        if (el.dataset.action === "add-oneoff") addOneOff(selected, draw);
+        if (el.dataset.action === "toggle-oneoff") {
+          const task = state.oneOffs.find((x) => x.id === el.dataset.id);
+          if (task && selected <= t) { task.done = !task.done; save(); draw(); }
+        }
+        if (el.dataset.action === "delete-oneoff") {
+          state.oneOffs = state.oneOffs.filter((x) => x.id !== el.dataset.id);
+          save(); draw();
+        }
       };
     };
     draw();
@@ -712,6 +726,16 @@
       const body = `Nezabudni: ${h.name}. ${QUOTES[Math.floor(Math.random() * QUOTES.length)]}`;
       toast({ kind: "reminder", title: `${h.emoji} ${h.name}`, body: "Čas na tvoje predsavzatie. " + QUOTES[Math.floor(Math.random() * QUOTES.length)] });
       notify(`${h.emoji} ${h.name}`, body, key);
+      if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+    }
+    for (const task of state.oneOffs) {
+      if (task.date !== t || !task.time || task.time !== hm || task.done) continue;
+      const key = `oneoff:${task.id}:${t}:${hm}`;
+      if (fired.has(key)) continue;
+      fired.add(key);
+      const body = `Nezabudni: ${task.title}. Čas na tvoj dnešný krok.`;
+      toast({ kind: "reminder", title: `🌿 ${task.title}`, body });
+      notify(`🌿 ${task.title}`, body, key);
       if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
     }
   }
