@@ -45,6 +45,10 @@ html[data-theme="dark"] {
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
   color-scheme: dark;
 }
+html[data-theme="dark"][data-season="spring"] { --brand:#a4c59b; --brand-2:#739c79; --brand-soft:#243528; }
+html[data-theme="dark"][data-season="summer"] { --brand:#70c7b7; --brand-2:#3d9689; --brand-soft:#16342f; }
+html[data-theme="dark"][data-season="autumn"] { --brand:#e1a16e; --brand-2:#b97549; --brand-soft:#3a281e; }
+html[data-theme="dark"][data-season="winter"] { --brand:#9bbdd0; --brand-2:#668ca4; --brand-soft:#1d2d38; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
