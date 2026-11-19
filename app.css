@@ -358,8 +358,8 @@ body::before, body::after {
   font-size:58px; line-height:1; opacity:.13; filter:saturate(.8);
   transition:opacity .35s ease,transform .5s ease;
 }
-body::before { content:"🌿"; top:13%; right:5%; transform:rotate(22deg); }
-body::after { content:"🍃"; bottom:17%; left:4%; transform:rotate(-24deg); }
+body::before { content:"🌿"; top:13%; right:5%; transform:rotate(22deg); text-shadow:-150px 190px 0 rgba(110,145,110,.45),-270px 410px 0 rgba(110,145,110,.3); }
+body::after { content:"🍃"; bottom:17%; left:4%; transform:rotate(-24deg); text-shadow:150px -190px 0 rgba(110,145,110,.35),270px -360px 0 rgba(110,145,110,.25); }
 html[data-season="spring"] body::before { content:"🌸"; }
 html[data-season="spring"] body::after { content:"🌷"; }
 html[data-season="summer"] body::before { content:"☀️"; }
