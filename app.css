@@ -22,6 +22,10 @@
   --sab: env(safe-area-inset-bottom, 0px);
   color-scheme: light;
 }
+html[data-season="spring"] { --brand:#65866b; --brand-2:#9bbd91; --brand-soft:#edf5e9; --bg:#f7f6ef; }
+html[data-season="summer"] { --brand:#247d78; --brand-2:#69b7a5; --brand-soft:#e7f5ef; --bg:#f4f7f1; }
+html[data-season="autumn"] { --brand:#a65e36; --brand-2:#d99a5b; --brand-soft:#f7eee4; --bg:#f7f1e9; }
+html[data-season="winter"] { --brand:#54758c; --brand-2:#91b4c7; --brand-soft:#eaf1f5; --bg:#f1f4f5; }
 html[data-theme="dark"] {
   --bg: #0b1210;
   --card: #141c1a;
@@ -263,3 +267,15 @@ html[data-theme="dark"] .tab-add .add-circle { color: #052321; }
 .quote-card { background: var(--brand-soft); border-color: transparent; }
 .quote-card p { font-size: 15px; font-style: italic; }
 .quote-card small { color: var(--muted); display: block; margin-top: 6px; }
+
+/* Recovery Habit – seasonal details and one-off tasks */
+.profile-edit { display:flex; align-items:center; gap:12px; }
+.profile-avatar { width:46px; height:46px; flex:0 0 46px; display:grid; place-items:center; border-radius:15px; background:var(--brand-soft); font-size:25px; }
+.oneoff-card { border-color:color-mix(in srgb,var(--brand) 28%,var(--border)); }
+.oneoff-list { list-style:none; padding:0; margin-bottom:0; }
+.oneoff-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--border); }
+.oneoff-item .check { font-size:16px; color:var(--brand); }
+.oneoff-item.done .oneoff-name { text-decoration:line-through; color:var(--faint); }
+.oneoff-emoji { font-size:19px; }
+.oneoff-name { flex:1; min-width:0; font-size:14px; font-weight:600; }
+.oneoff-item small { color:var(--muted); font-size:11px; }
