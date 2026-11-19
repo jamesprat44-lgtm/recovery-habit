@@ -11,9 +11,9 @@
   "theme_color": "#314f40",
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "apple-touch-icon.png?v=7",
+      "sizes": "180x180",
+      "type": "image/png",
       "purpose": "any"
     }
   ],
@@ -23,8 +23,9 @@
       "url": "./index.html#/add",
       "icons": [
         {
-          "src": "icon-96.png",
-          "sizes": "96x96"
+          "src": "apple-touch-icon.png?v=7",
+          "sizes": "180x180",
+          "type": "image/png"
         }
       ]
     },
@@ -33,8 +34,9 @@
       "url": "./index.html#/stats",
       "icons": [
         {
-          "src": "icon-96.png",
-          "sizes": "96x96"
+          "src": "apple-touch-icon.png?v=7",
+          "sizes": "180x180",
+          "type": "image/png"
         }
       ]
     }
