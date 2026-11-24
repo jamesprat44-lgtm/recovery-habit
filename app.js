@@ -482,7 +482,8 @@
               : `<p class="small muted mt">Zatiaľ nemáš žiadne splnené predsavzatia.</p>`;
           })()}
           ${Object.values(state.logs).reduce((s, d) => s + Object.keys(d).length, 0) > 100 ? `<p class="small muted mt">Zobrazených je posledných 100 splnení.</p>` : ""}
-        </section>`;.forEach((b) => (b.onclick = () => { m += Number(b.dataset.nav); if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } selected = `${y}-${pad(m)}-01`; if (t.startsWith(`${y}-${pad(m)}`)) selected = t; draw(); }));
+        </section>`;
+      app.querySelectorAll("[data-nav]").forEach((b) => (b.onclick = () => { m += Number(b.dataset.nav); if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } selected = `${y}-${pad(m)}-01`; if (t.startsWith(`${y}-${pad(m)}`)) selected = t; draw(); }));
       app.querySelectorAll("[data-day]").forEach((b) => (b.onclick = () => { selected = b.dataset.day; draw(); }));
       app.querySelectorAll("[data-history-date]").forEach((b) => (b.onclick = () => { selected = b.dataset.historyDate; [y, m] = [fromStr(selected).getFullYear(), fromStr(selected).getMonth() + 1]; draw(); }));
       app.onclick = (e) => {
