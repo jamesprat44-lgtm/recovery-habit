@@ -1,7 +1,7 @@
 /* Recovery Habit – service worker
  * Offline cache (cache-first pre app shell) + zobrazovanie notifikácií.
  */
-const CACHE = "recovery-habit-v7";
+const CACHE = "recovery-habit-v8";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,10 +9,10 @@ const ASSETS = [
   "./app.js",
   "./manifest.webmanifest",
   "./apple-touch-icon.png",
-  "./apple-touch-icon.png",
-  "./apple-touch-icon.png",
-  "./apple-touch-icon.png",
-  "./apple-touch-icon.png",
+  "./icon-192.png",
+  "./icon-96.png",
+  "./icon-512.png",
+  "./maskable-512.png",
   "./icon.svg",
 ];
 
