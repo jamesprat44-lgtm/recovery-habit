@@ -470,8 +470,19 @@
         <section class="card mt oneoff-card">
           <div class="card-title"><span>Jednorazové úlohy</span><button class="btn sm outline" data-action="add-oneoff">+ Pridať</button></div>
           ${oneOffs.length ? `<ul class="oneoff-list mt">${oneOffs.map((x) => `<li class="oneoff-item ${x.done ? "done" : ""}"><button class="check" data-action="toggle-oneoff" data-id="${esc(x.id)}" ${selected > t ? "disabled" : ""} aria-label="Označiť úlohu">${x.done ? "✓" : ""}</button><span class="oneoff-emoji">${esc(x.emoji || "🌿")}</span><span class="oneoff-name">${esc(x.title)}</span>${x.time ? `<small>${esc(x.time)}</small>` : ""}<button class="more" data-action="delete-oneoff" data-id="${esc(x.id)}" aria-label="Odstrániť">×</button></li>`).join("")}</ul>` : `<p class="small muted mt">Na tento deň nemáš jednorazovú úlohu.</p>`}
-        </section>`;
-      app.querySelectorAll("[data-nav]").forEach((b) => (b.onclick = () => { m += Number(b.dataset.nav); if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } selected = `${y}-${pad(m)}-01`; if (t.startsWith(`${y}-${pad(m)}`)) selected = t; draw(); }));
+        </section>
+        <section class="card mt history-card">
+          <div class="card-title"><span>Posledné splnenia</span><span class="pill">${Object.values(state.logs).reduce((s, d) => s + Object.keys(d).length, 0)}</span></div>
+          ${(() => {
+            const entries = Object.entries(state.logs).flatMap(([date, day]) =>
+              Object.keys(day).filter((id) => day[id]).map((id) => ({ date, h: state.habits.find((x) => x.id === id) }))
+            ).filter((x) => x.h).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 100);
+            return entries.length
+              ? `<div class="history-list">${entries.map(({ date, h }) => `<button class="history-item" data-history-date="${date}"><span class="history-check">✓</span><span class="history-emoji">${esc(h.emoji)}</span><span class="history-body"><b>${esc(h.name)}</b><small>${fmtLong(date)}</small></span><span class="history-arrow">›</span></button>`).join("")}</div>`
+              : `<p class="small muted mt">Zatiaľ nemáš žiadne splnené predsavzatia.</p>`;
+          })()}
+          ${Object.values(state.logs).reduce((s, d) => s + Object.keys(d).length, 0) > 100 ? `<p class="small muted mt">Zobrazených je posledných 100 splnení.</p>` : ""}
+        </section>`;.forEach((b) => (b.onclick = () => { m += Number(b.dataset.nav); if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } selected = `${y}-${pad(m)}-01`; if (t.startsWith(`${y}-${pad(m)}`)) selected = t; draw(); }));
       app.querySelectorAll("[data-day]").forEach((b) => (b.onclick = () => { selected = b.dataset.day; draw(); }));
       app.onclick = (e) => {
         const el = e.target.closest("[data-action]");
