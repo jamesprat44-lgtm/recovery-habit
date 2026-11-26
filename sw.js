@@ -1,7 +1,7 @@
 /* Recovery Habit – service worker
  * Offline cache (cache-first pre app shell) + zobrazovanie notifikácií.
  */
-const CACHE = "recovery-habit-v8";
+const CACHE = "recovery-habit-v9";
 const ASSETS = [
   "./",
   "./index.html",
